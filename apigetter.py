@@ -2,8 +2,7 @@
 
 import sys
 
-from api_tools import constants
-from api_tools import socrata_tools
+from api_tools import constants, socrata_tools
 
 
 def main(mode_select):
@@ -24,6 +23,8 @@ def main(mode_select):
         permit_data = soc_tools.refresh_data(permit_data)
 
     permit_data = soc_tools.reclass_builders(permit_data)
+
+    soc_tools.clean_addresses(permit_data)
 
     # Save Data to CSV
     soc_tools.jsave(permit_data, constants.DATAFILE_PATH)

@@ -1,6 +1,6 @@
 """Constants!"""
-DATAFILE_PATH = 'calgary_permit_data.csv'
 DATA_FOLDER_PATH = 'data/'
+DATAFILE_PATH = DATA_FOLDER_PATH + 'calgary_permit_data.csv'
 BUILDER_RECLASS_PATH = DATA_FOLDER_PATH + 'builder_reclass.csv'
 TOCLASS_BUILDER_PATH = DATA_FOLDER_PATH + 'To Reclass/toclass_builders.csv'
 
@@ -23,7 +23,7 @@ TARGET_COLS = {
     'communityname': 'Community',
     'latitude': 'Latitude',
     'longitude': 'Longitude',
-    'locationaddresses': 'Address'
+    'originaladdress': 'Address'
 }
 
 PCG_ARGS = ['Single Family', 'Two Family']
@@ -31,3 +31,15 @@ PCM_ARG = 'Residential'
 WCM_ARG = 'New'
 PT_ARG = 'Single Construction Permit'
 ORDER_ARG = 'applieddate DESC'
+
+
+COMPASS_LIST = [
+    'N',
+    'NE',
+    'E',
+    'SE',
+    'S',
+    'SW',
+    'W',
+    'NW'
+]

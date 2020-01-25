@@ -63,34 +63,54 @@ class DFTools:
                                             ascending=False)
 
         renamed_df = self.rename_rows(results_df)
-        renamed_df.dropna(subset=['Builder'], inplace=True)
+        renamed_df = renamed_df.dropna(subset=['Builder'])
 
         return renamed_df
 
     @staticmethod
-    def rename_rows(df_input):
+    def rename_rows(input_df):
         """ Renames all rows based on key"""
-        df_renamed = df_input
-        for k in df_input.columns:
+        renamed_df = input_df
+        for k in input_df.columns:
             if k not in list(constants.TARGET_COLS.keys()):
-                df_renamed = df_renamed.drop(k, axis=1)
+                renamed_df = renamed_df.drop(k, axis=1)
             else:
-                df_renamed = df_renamed.rename(
+                renamed_df = renamed_df.rename(
                     columns={k: constants.TARGET_COLS[k]})
 
-        return df_renamed
+        return renamed_df
 
-    def reclass_builders(self, df_input):
-        df_reclass = self.csv_open(constants.BUILDER_RECLASS_PATH)
-        df_input['Builder Reclass'] = df_input['Builder'].map(
-            df_reclass.set_index('Builder')['Builder Reclass'].to_dict())
+    def clean_addresses(self, input_df):
+        """ 3 new columns: house no., street"""
+        split_address_l = input_df['Address'].str.split(' ', n=1)
+        house_no = []
+        street = []
+        for l in split_address_l:
+            try:
+                house_no.append(l[0])
+                street.append(l[1])
+            except:
+                house_no.append('NaN')
+                street.append('NaN')
+        input_df['House Number'] = house_no
+        input_df['Street'] = street
+        print(input_df)
 
-        df_input_nan = df_input[pd.isna(df_input['Builder Reclass'])]
-        self.jsave(df_input_nan[['Builder']], constants.TOCLASS_BUILDER_PATH)
+    def reclass_builders(self, input_df):
+        reclass_df = self.csv_open(constants.BUILDER_RECLASS_PATH)
+        input_df['Builder Reclass'] = input_df['Builder'].map(
+            reclass_df.set_index('Builder')['Builder Reclass'].to_dict())
 
-        df_input['Builder Reclass'].fillna('Smaller Builder', inplace=True)
+        input_df_nan = input_df[pd.isna(input_df['Builder Reclass'])]
+        print(
+            input_df_nan.shape[0], 'Builders are currently unclassified..' +
+            ' setting them to Smaller Builder')
+        self.jsave(input_df_nan[['Builder']], constants.TOCLASS_BUILDER_PATH)
 
-        return df_input
+        input_df['Builder Reclass'] = input_df['Builder Reclass'].fillna(
+            'Smaller Builder')
+
+        return input_df
 
     def jprint(self, obj):
         """ Prints JSON"""
@@ -99,7 +119,7 @@ class DFTools:
 
     def jsave(self, dataframe, file_name):
         """Exports JSON to CSV"""
-        dataframe.to_csv(file_name, index=False)
+        dataframe.to_csv(file_name, header=True, index=False)
 
     def csv_open(self, path):
         """Opens Path using pandas"""
