@@ -23,7 +23,9 @@ def main(mode_select):
         permit_data = soc_tools.csv_open(constants.DATAFILE_PATH)
         permit_data = soc_tools.refresh_data(permit_data)
 
-    #Save Data to CSV
+    permit_data = soc_tools.reclass_builders(permit_data)
+
+    # Save Data to CSV
     soc_tools.jsave(permit_data, constants.DATAFILE_PATH)
 
 

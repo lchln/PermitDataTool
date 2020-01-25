@@ -1,5 +1,8 @@
 """Constants!"""
 DATAFILE_PATH = 'calgary_permit_data.csv'
+DATA_FOLDER_PATH = 'data/'
+BUILDER_RECLASS_PATH = DATA_FOLDER_PATH + 'builder_reclass.csv'
+TOCLASS_BUILDER_PATH = DATA_FOLDER_PATH + 'To Reclass/toclass_builders.csv'
 
 OD_PORTAL = 'data.calgary.ca'
 OD_KEY = 'c2es-76ed'

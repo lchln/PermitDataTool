@@ -20,11 +20,13 @@ class DFTools:
 
         new_data = self.get_data(max_date, True)
 
-        print(abs(count_before - count_after - new_data.shape[0]), 'new permits')
+        print(abs(count_before - count_after - new_data.shape[0]),
+              'new permits')
 
         new_data = new_data.append(old_data)
 
         return new_data
+
     def get_data(self, from_date, refresh):
         """ gets data from from_date onwards"""
         client = Socrata(constants.OD_PORTAL,
@@ -61,6 +63,7 @@ class DFTools:
                                             ascending=False)
 
         renamed_df = self.rename_rows(results_df)
+        renamed_df.dropna(subset=['Builder'], inplace=True)
 
         return renamed_df
 
@@ -77,14 +80,26 @@ class DFTools:
 
         return df_renamed
 
+    def reclass_builders(self, df_input):
+        df_reclass = self.csv_open(constants.BUILDER_RECLASS_PATH)
+        df_input['Builder Reclass'] = df_input['Builder'].map(
+            df_reclass.set_index('Builder')['Builder Reclass'].to_dict())
+
+        df_input_nan = df_input[pd.isna(df_input['Builder Reclass'])]
+        self.jsave(df_input_nan[['Builder']], constants.TOCLASS_BUILDER_PATH)
+
+        df_input['Builder Reclass'].fillna('Smaller Builder', inplace=True)
+
+        return df_input
+
     def jprint(self, obj):
         """ Prints JSON"""
         text = json.dumps(obj, sort_keys=True, indent=4)
         print(text)
 
-    def jsave(self, obj, file_name):
+    def jsave(self, dataframe, file_name):
         """Exports JSON to CSV"""
-        obj.to_csv(file_name, index=False)
+        dataframe.to_csv(file_name, index=False)
 
     def csv_open(self, path):
         """Opens Path using pandas"""
